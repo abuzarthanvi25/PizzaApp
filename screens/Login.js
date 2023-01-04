@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -6,9 +6,36 @@ import {
   StyleSheet,
   ImageBackground,
   TextInput,
+  ToastAndroid,
+  ActivityIndicator,
 } from 'react-native';
+import auth from '@react-native-firebase/auth';
 
 export default function Login({navigation}) {
+  let [email, setEmail] = useState('');
+  let [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  let loginUser = () => {
+    setLoading(true);
+    console.log(email);
+    console.log(password);
+    auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(res => {
+        setLoading(false);
+        console.log(res.user.uid);
+        ToastAndroid.show('Logged In Successfully', 800);
+        navigation.navigate('Landing Screen', {
+          userId: res.user.uid,
+        });
+      })
+      .catch(err => {
+        setLoading(false);
+        console.log(err);
+        Alert.alert(err);
+      });
+  };
   return (
     <>
       <ImageBackground
@@ -22,6 +49,7 @@ export default function Login({navigation}) {
           </View>
           <View>
             <TextInput
+              onChangeText={e => setEmail(e)}
               placeholderTextColor={'#B05D5D'}
               placeholder="Email"
               style={styles.input}
@@ -30,7 +58,9 @@ export default function Login({navigation}) {
           </View>
           <View>
             <TextInput
+              onChangeText={e => setPassword(e)}
               placeholderTextColor={'#B05D5D'}
+              secureTextEntry={true}
               placeholder="Password"
               style={styles.input}
               keyboardType={'email-address'}
@@ -38,9 +68,16 @@ export default function Login({navigation}) {
           </View>
           <View>
             <TouchableOpacity
-              // onPress={() => navigation.navigate('Landing Screen')}
+              disabled={loading}
+              onPress={loginUser}
               style={styles.button}>
-              <Text style={styles.btnText}>Login</Text>
+              <Text style={styles.btnText}>
+                {loading ? (
+                  <ActivityIndicator size={20} color="white" />
+                ) : (
+                  'Login'
+                )}
+              </Text>
             </TouchableOpacity>
           </View>
 

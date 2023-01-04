@@ -5,6 +5,7 @@ import Pizzas from './Pizzas';
 import Deserts from './Deserts';
 import Burgers from './Burgers';
 import Beverages from './Beverages';
+import Test from './Test';
 
 const renderTabBar = props => (
   <TabBar
@@ -61,7 +62,7 @@ const getTabBarIcon = props => {
         source={{
           uri: 'https://thumbs.dreamstime.com/b/pepperoni-pizza-black-background-visit-my-page-you-will-be-able-to-find-image-every-sold-your-cafe-restaurant-117753303.jpg',
         }}
-        style={{width: 35, height: 35, borderRadius: 50}}
+        style={{width: 30, height: 30, borderRadius: 50}}
         resizeMode={'contain'}
       />
     );
@@ -72,7 +73,7 @@ const getTabBarIcon = props => {
         source={{
           uri: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8YnVyZ2VyJTIwcG5nfGVufDB8fDB8fA%3D%3D&w=1000&q=80',
         }}
-        style={{width: 35, height: 35, borderRadius: 50}}
+        style={{width: 30, height: 30, borderRadius: 50}}
         resizeMode={'contain'}
       />
     );
@@ -84,7 +85,7 @@ const getTabBarIcon = props => {
           uri: 'https://media.istockphoto.com/id/175265521/photo/chocolate-cupcake-red-frosting-and-candle-smoke.jpg?s=612x612&w=0&k=20&c=cw3xhfq6ruIzJoxI_pVt1yDmA8eEjjst1XqSq8Z81D8=',
         }}
         resizeMode={'contain'}
-        style={{width: 35, height: 35, borderRadius: 50}}
+        style={{width: 30, height: 30, borderRadius: 50}}
       />
     );
   }
@@ -95,7 +96,7 @@ const getTabBarIcon = props => {
           uri: 'https://africa-images.com/public/photos/7/l/7l4UYssAVas6LqtLkCjmQRzz9/7l4UYssAVas6LqtLkCjmQRzz9_small.jpg',
         }}
         resizeMode={'contain'}
-        style={{width: 35, height: 35, borderRadius: 50}}
+        style={{width: 30, height: 30, borderRadius: 50}}
       />
     );
   }
@@ -108,7 +109,7 @@ const renderScene = SceneMap({
   fourth: Beverages,
 });
 
-export default function Landing() {
+export default function Landing({navigation}) {
   const layout = useWindowDimensions();
 
   const [index, setIndex] = React.useState(0);

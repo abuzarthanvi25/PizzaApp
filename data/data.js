@@ -1904,6 +1904,7 @@ export const beverages = [
         images: 'https://s7d1.scene7.com/is/image/mcdonalds/default_logo',
       },
     ],
+    price: 7,
   },
   {
     id: 71,

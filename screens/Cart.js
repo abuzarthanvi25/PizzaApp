@@ -5,15 +5,12 @@ import {remove, removeAll} from '../store/cartSlice';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default function Cart({navigation}) {
-  const cartItems = useSelector(state => state.cart);
+  let cartItems = useSelector(state => state.cart);
   const dispatch = useDispatch();
-  console.log(cartItems);
   const totalPrice = cartItems
     .map(x => x.price)
     .reduce((partialSum, a) => partialSum + a, 0)
     .toFixed(0);
-
-  console.log(totalPrice);
   return (
     <>
       <ScrollView style={{backgroundColor: 'white'}}>

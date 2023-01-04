@@ -3,10 +3,14 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Landing from '../screens/Landing';
 import Cart from '../screens/Cart';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useSelector} from 'react-redux';
+import LandingStack from './LandingStack';
 
 const Tab = createBottomTabNavigator();
 
-export default function App() {
+export default function TabRoot({navigation}) {
+  const cartItemsNumber = useSelector(state => state.cart);
+
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
@@ -20,7 +24,6 @@ export default function App() {
           }
           return <Icon name={iconName} size={20} color={color} />;
         },
-        // headerShown: false,
         tabBarActiveTintColor: '#fff',
         tabBarActiveBackgroundColor: '#D00000',
         tabBarLabelStyle: {
@@ -29,8 +32,12 @@ export default function App() {
           fontWeight: 'bold',
         },
       })}>
-      <Tab.Screen name="Menu" component={Landing} />
-      <Tab.Screen name="Cart" component={Cart} />
+      <Tab.Screen name="Menu" component={LandingStack} />
+      <Tab.Screen
+        name="Cart"
+        options={{tabBarBadge: cartItemsNumber.length}}
+        component={Cart}
+      />
     </Tab.Navigator>
   );
 }

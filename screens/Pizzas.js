@@ -1,12 +1,28 @@
-import React from 'react';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import {useDispatch} from 'react-redux';
-import {pizzas} from '../data/data';
-import {add} from '../store/cartSlice';
+import React, {useEffect, useState} from 'react';
+import database from '@react-native-firebase/database';
+import {ActivityIndicator, ScrollView, View} from 'react-native';
+import {useSelector} from 'react-redux';
+import AddButton from '../components/AddButton';
+import Product from '../components/Product';
+import Quantity from '../components/Quantity';
 
 export default function Pizzas() {
-  const dispatch = useDispatch();
+  const [pizzaList, setPizzaList] = useState([]);
+  const cartItemsNumber = useSelector(state => state.cart);
+  const specificItems = pizza => {
+    return cartItemsNumber.filter(item => item.id === pizza.id);
+  };
+  const getPizzas = () => {
+    const pizzaRef = database().ref(`pizzas/`);
+    pizzaRef.on('value', snapshot => {
+      const data = snapshot.val();
+      data ? setPizzaList(Object.values(data).reverse()) : null;
+      setPizzaList(Object.values(data));
+    });
+  };
+  useEffect(() => {
+    getPizzas();
+  }, []);
   return (
     <>
       <ScrollView
@@ -14,104 +30,59 @@ export default function Pizzas() {
           marginVertical: 10,
           marginHorizontal: 20,
         }}>
-        {pizzas && pizzas.length > 0
-          ? pizzas.map((pizza, i) => (
-              <TouchableOpacity key={i}>
-                <View
-                  style={{
-                    backgroundColor: '#fff',
-                    marginVertical: 15,
-                    flexDirection: 'column',
-                    borderRadius: 10,
-                    shadowColor: '#000',
-                    shadowOffset: {
-                      width: 0,
-                      height: 1,
-                    },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 1.41,
+        {pizzaList && pizzaList.length > 0 ? (
+          pizzaList.map((pizza, i) => {
+            return (
+              <View
+                key={i}
+                style={{
+                  backgroundColor: '#fff',
+                  marginVertical: 15,
+                  flexDirection: 'column',
+                  borderRadius: 10,
+                  shadowColor: '#000',
+                  shadowOffset: {
+                    width: 0,
+                    height: 1,
+                  },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 1.41,
 
-                    elevation: 2,
-                    position: 'relative',
-                  }}>
-                  <Text
-                    style={{
-                      color: 'black',
-                      fontSize: 16,
-                      margin: 5,
-                      marginLeft: 10,
-                      fontWeight: 'bold',
-                    }}>
-                    {pizza.name}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 15,
-                      color: '#9A9A9A',
-                      marginBottom: 4,
-                      marginLeft: 10,
-                    }}>
-                    {pizza.description.length > 50
-                      ? pizza.description.slice(0, 50) + '...'
-                      : pizza.description}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 28,
-                      color: 'black',
-                      marginBottom: 4,
-                      marginLeft: 10,
-                      position: 'absolute',
-                      top: 170,
-                      left: 280,
-                      zIndex: 1,
-                      backgroundColor: '#FFD100',
-                      paddingHorizontal: 10,
-
-                      fontWeight: 'bold',
-                      paddingRight: 20,
-                    }}>
-                    ${pizza.price}
-                  </Text>
-                  <Image
-                    style={{
-                      width: '100%',
-                      height: 160,
-                    }}
-                    source={{uri: `${pizza.img}`}}
-                  />
-                  <View style={{alignItems: 'space-between'}}>
-                    <TouchableOpacity
-                      onPress={() => dispatch(add(pizza))}
-                      style={{
-                        backgroundColor: 'red',
-                        width: 50,
-                        margin: 10,
-                        marginHorizontal: 10,
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderRadius: 5,
-                        paddingHorizontal: 15,
-                        paddingVertical: 6,
-                        width: 'auto',
-                      }}>
-                      <Icon name="add" size={13} color="white" />
-                      <Text
-                        style={{
-                          color: 'white',
-                          fontSize: 14,
-                          marginLeft: 5,
-                          fontWeight: 'bold',
-                        }}>
-                        Add
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ))
-          : null}
+                  elevation: 2,
+                  position: 'relative',
+                }}>
+                <Product
+                  productName={pizza.name}
+                  productDescription={pizza.description}
+                  productPrice={pizza.price}
+                  productImage={pizza.img}
+                  resizeMode={null}
+                />
+                {specificItems(pizza).length > 0 ? (
+                  <>
+                    <Quantity
+                      product={pizza}
+                      productId={pizza.id}
+                      specificItemList={specificItems(pizza)}
+                      key={i}
+                    />
+                  </>
+                ) : (
+                  <AddButton product={pizza} />
+                )}
+              </View>
+            );
+          })
+        ) : (
+          <View
+            style={{
+              height: 600,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <ActivityIndicator color={'#D00000'} size={100} />
+          </View>
+        )}
       </ScrollView>
     </>
   );
