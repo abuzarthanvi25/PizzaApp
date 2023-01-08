@@ -4,7 +4,6 @@ import Landing from '../screens/Landing';
 import Cart from '../screens/Cart';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useSelector} from 'react-redux';
-import LandingStack from './LandingStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -32,7 +31,11 @@ export default function TabRoot({navigation}) {
           fontWeight: 'bold',
         },
       })}>
-      <Tab.Screen name="Menu" component={LandingStack} />
+      <Tab.Screen
+        name="Menu"
+        options={{headerShown: false}}
+        component={Landing}
+      />
       <Tab.Screen
         name="Cart"
         options={{tabBarBadge: cartItemsNumber.length}}

@@ -189,6 +189,7 @@ export default function Cart({navigation}) {
           </View>
           <View style={{backgroundColor: 'white'}}>
             <TouchableOpacity
+              onPress={() => console.log(navigation)}
               style={{
                 backgroundColor: 'red',
                 width: 50,

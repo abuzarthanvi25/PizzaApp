@@ -6,12 +6,13 @@ import AddButton from '../components/AddButton';
 import Product from '../components/Product';
 import Quantity from '../components/Quantity';
 
-export default function Pizzas() {
+export default function Pizzas({navigation}) {
   const [pizzaList, setPizzaList] = useState([]);
   const cartItemsNumber = useSelector(state => state.cart);
-  const specificItems = pizza => {
+  let specificItems = pizza => {
     return cartItemsNumber.filter(item => item.id === pizza.id);
   };
+
   const getPizzas = () => {
     const pizzaRef = database().ref(`pizzas/`);
     pizzaRef.on('value', snapshot => {
