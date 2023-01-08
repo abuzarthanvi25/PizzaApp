@@ -1,118 +1,93 @@
-import React from 'react';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import {useDispatch} from 'react-redux';
-import {deserts} from '../data/data';
-import {add} from '../store/cartSlice';
+import React, {useEffect, useState} from 'react';
+import database from '@react-native-firebase/database';
+import {
+  ActivityIndicator,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {useSelector} from 'react-redux';
+import AddButton from '../components/AddButton';
+import Product from '../components/Product';
+import Quantity from '../components/Quantity';
 
 export default function ShoppingCart() {
-  const dispatch = useDispatch();
+  const [desertsList, setDesertsList] = useState([]);
+  const cartItemsNumber = useSelector(state => state.cart);
+  const specificItems = desert => {
+    return cartItemsNumber.filter(item => item.id === desert.id);
+  };
+  const getDeserts = () => {
+    const desertRef = database().ref(`deserts/`);
+    desertRef.on('value', snapshot => {
+      const data = snapshot.val();
+      console.log(Object.values(data));
+      data ? setDesertsList(Object.values(data).reverse()) : null;
+      setDesertsList(Object.values(data));
+    });
+  };
+  useEffect(() => {
+    getDeserts();
+  }, []);
   return (
     <>
       <ScrollView
         style={{
           margin: 20,
-          // flexWrap: 'wrap',
         }}>
-        {deserts && deserts.length > 0
-          ? deserts.map((desert, i) => (
-              <TouchableOpacity key={i}>
-                <View
-                  style={{
-                    backgroundColor: '#fff',
-                    marginVertical: 15,
-                    flexDirection: 'column',
-                    borderRadius: 10,
-                    shadowColor: '#000',
-                    shadowOffset: {
-                      width: 0,
-                      height: 1,
-                    },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 1.41,
+        {desertsList && desertsList.length > 0 ? (
+          desertsList.map((desert, i) => {
+            return (
+              <View
+                key={i}
+                style={{
+                  backgroundColor: '#fff',
+                  marginVertical: 15,
+                  flexDirection: 'column',
+                  borderRadius: 10,
+                  shadowColor: '#000',
+                  shadowOffset: {
+                    width: 0,
+                    height: 1,
+                  },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 1.41,
 
-                    elevation: 2,
-                    position: 'relative',
-                  }}>
-                  <Text
-                    style={{
-                      color: 'black',
-                      fontSize: 16,
-                      margin: 5,
-                      marginLeft: 10,
-                      fontWeight: 'bold',
-                    }}>
-                    {desert.name}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 15,
-                      color: '#9A9A9A',
-                      marginBottom: 4,
-                      marginLeft: 10,
-                    }}>
-                    {desert.description.length > 50
-                      ? desert.description.slice(0, 50) + '...'
-                      : desert.description}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 28,
-                      color: 'black',
-                      marginBottom: 4,
-                      marginLeft: 10,
-                      position: 'absolute',
-                      top: 170,
-                      left: 280,
-                      zIndex: 1,
-                      backgroundColor: '#FFD100',
-                      paddingHorizontal: 10,
-
-                      fontWeight: 'bold',
-                      paddingRight: 20,
-                    }}>
-                    ${desert.price}
-                  </Text>
-                  <Image
-                    style={{
-                      width: '100%',
-                      height: 160,
-                    }}
-                    source={{uri: `${desert.img}`}}
-                    resizeMode={'contain'}
-                  />
-                  <View style={{alignItems: 'space-between'}}>
-                    <TouchableOpacity
-                      onPress={() => dispatch(add(desert))}
-                      style={{
-                        backgroundColor: 'red',
-                        width: 50,
-                        margin: 10,
-                        marginHorizontal: 10,
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderRadius: 5,
-                        paddingHorizontal: 15,
-                        paddingVertical: 6,
-                        width: 'auto',
-                      }}>
-                      <Icon name="add" size={13} color="white" />
-                      <Text
-                        style={{
-                          color: 'white',
-                          fontSize: 14,
-                          marginLeft: 5,
-                          fontWeight: 'bold',
-                        }}>
-                        Add
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ))
-          : null}
+                  elevation: 2,
+                  position: 'relative',
+                }}>
+                <Product
+                  productName={desert.name}
+                  productDescription={desert.description}
+                  productPrice={desert.price}
+                  productImage={desert.img}
+                  resizeMode={'contain'}
+                />
+                {specificItems(desert).length > 0 ? (
+                  <>
+                    <Quantity
+                      product={desert}
+                      productId={desert.id}
+                      specificItemList={specificItems(desert)}
+                      key={i}
+                    />
+                  </>
+                ) : (
+                  <AddButton product={desert} />
+                )}
+              </View>
+            );
+          })
+        ) : (
+          <View
+            style={{
+              height: 600,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <ActivityIndicator color={'#D00000'} size={100} />
+          </View>
+        )}
       </ScrollView>
     </>
   );

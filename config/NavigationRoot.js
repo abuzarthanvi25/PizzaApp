@@ -4,7 +4,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SplashScreen from '../screens/SplashScreen';
 import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
-import TabRoot from './TabNavigationRoot';
+import TabRoot from './TabRoot';
+import Map from '../screens/Map';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +32,11 @@ function NavigationRoot() {
           name="Signup Screen"
           options={{headerShown: false}}
           component={SignUp}
+        />
+        <Stack.Screen
+          name="Checkout Screen"
+          options={{headerShown: false}}
+          component={Map}
         />
       </Stack.Navigator>
     </NavigationContainer>

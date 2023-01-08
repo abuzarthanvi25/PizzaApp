@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -6,9 +6,41 @@ import {
   StyleSheet,
   ImageBackground,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
+import auth from '@react-native-firebase/auth';
+import database from '@react-native-firebase/database';
 
-export default function Login({navigation}) {
+export default function SignUp({navigation}) {
+  const [model, setModel] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  let signupuser = () => {
+    setLoading(true);
+    console.log(model);
+    auth()
+      .createUserWithEmailAndPassword(model.email, model.password)
+      .then(res => {
+        setLoading(false);
+        console.log(res);
+        console.log(res.user.uid);
+        database()
+          .ref(`users/${res.user.uid}`)
+          .set(model)
+          .then(() => {
+            setLoading(false);
+            navigation.navigate('Login Screen', res.user.uid);
+          })
+          .catch(dbError => {
+            setLoading(false);
+            console.log(dbError);
+          });
+      })
+      .catch(err => {
+        setLoading(false);
+        console.log(err);
+      });
+  };
   return (
     <>
       <ImageBackground
@@ -22,6 +54,7 @@ export default function Login({navigation}) {
           </View>
           <View>
             <TextInput
+              onChangeText={e => setModel({...model, email: e})}
               placeholderTextColor={'#B05D5D'}
               placeholder="Email"
               style={styles.input}
@@ -30,15 +63,22 @@ export default function Login({navigation}) {
           </View>
           <View>
             <TextInput
+              onChangeText={e => setModel({...model, password: e})}
               placeholderTextColor={'#B05D5D'}
               placeholder="Password"
               style={styles.input}
-              keyboardType={'email-address'}
+              secureTextEntry={true}
             />
           </View>
           <View>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.btnText}>Sign Up</Text>
+            <TouchableOpacity onPress={signupuser} style={styles.button}>
+              <Text style={styles.btnText}>
+                {loading ? (
+                  <ActivityIndicator size={20} color="white" />
+                ) : (
+                  'Sign Up'
+                )}
+              </Text>
             </TouchableOpacity>
           </View>
 
